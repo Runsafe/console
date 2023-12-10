@@ -1,2 +1,3 @@
 #!/bin/bash
-su - server4
+cd /home/server4
+sudo -u server4 /bin/bash -
