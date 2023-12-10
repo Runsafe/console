@@ -1,0 +1,3 @@
+#!/bin/bash
+logs=${@:2}
+/usr/local/bin/mc-log.loop $1 "$logs" 2>/dev/null

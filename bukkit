@@ -1,0 +1,195 @@
+#!/bin/bash
+
+java="/etc/alternatives/jre_1.8.0/bin/java"
+java_opts="-XX:+UseG1GC -XX:MaxGCPauseMillis=50 -Xmx4G"
+
+cd ~
+if [ ! -d bukkit ]; then
+	echo "No bukkit install found"
+	exit 1
+fi
+
+servername=bukkit
+
+if [ "$2" = "-q" -o "$3" = "-q" ]; then
+	output=false
+else
+	output=true
+fi
+
+stop()
+{
+	send_command "stop"
+	wait_stop
+}
+
+wait_stop()
+{
+	$output && echo -n "Waiting for server to halt";
+	retry=0
+	while [ `server_instances` -gt 0 ]; do
+		$output && echo -n ".";
+		sleep 1;
+		((retry=$retry + 1))
+		if [ $retry -gt 10 ]; then
+			send_command "stop"
+			retry=0
+		fi
+	done
+	$output && echo " OK"
+}
+
+start()
+{
+	$output && echo -n "Server starting... ";
+	cd ~/bukkit
+	#if [ `whoami` = "server4" ]; then
+		#screen -UdmS $servername /usr/java/jdk1.7.0/bin/java -Xincgc -Xmx4G -agentlib:jdwp=transport=dt_socket,server=n,address=tsunami.lan.4th-age.com:5005,suspend=y -jar `ls -w1 *.jar | head -n1`
+		#screen -UdmS $servername /usr/lib/jvm/jre-1.8.0/bin/java -Xincgc -Xmx4G -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar `ls -w1 *.jar | head -n1`
+	screen -UdmS $servername $java $java_opts -jar `ls -w1 *.jar | head -n1`
+	#else
+	#	screen -UdmS $servername /usr/java/jdk1.7.0/bin/java -Xincgc -Xmx4G -jar `ls -w1 *.jar | head -n1`
+	#fi
+	# Restart log tails
+	(sleep 5; killall tail 2> /dev/null) &
+	$output && echo "OK";
+}
+
+run()
+{
+	cd ~/bukkit
+	$java $java_opts -jar `ls -w1 *.jar | head -n1`
+}
+
+restart()
+{
+	send_command "say Restarting server"
+	stop
+	start
+}
+
+send_command()
+{
+	echo "[$(date +%H:%M:%S)] Console issued: ${1}" >> ~/bukkit/logging/console-cmd.log
+	screen -S $servername -p 0 -X stuff "$(printf "\x15${1}\r")"
+}
+
+server_instances()
+{
+	screen -ls | grep -v "No Sockets" | grep -c $servername
+}
+
+delay_loop()
+{
+	delay=$1
+	sleeptime=$2
+	message=$3
+	increment=$4
+	while [ $delay -gt 0 ]; do
+		what=`echo $message | sed -e s/%d/$delay/`
+		send_command "say $what"
+		echo "[Server] $what"
+		((delay=$delay - $increment))
+		if [ $delay -gt 0 ]; then
+			sleep $sleeptime
+		fi
+	done
+}
+
+if [ "$1" = "start" ]; then
+	if [ `server_instances` -gt 0 ]; then
+		$output && echo "Server is already running..";
+		exit 0;
+	fi
+	start
+	exit 0
+fi
+
+if [ "$1" = "stop" ]; then
+	if [ `server_instances` -eq 0 ]; then
+		$output && echo "Server isn't running..";
+		exit 0;
+	fi
+	stop
+	exit 0
+fi
+
+if [ "$1" = "shutdown" ]; then
+	if [ "$2" = "now" -o "$2" = "0" ]; then
+		stop
+	else
+		if [ "$2" = "" ]; then
+			delay=10
+		else
+			delay=$2
+		fi
+		if [ "$3" = "" ]; then
+			reason='Shutting down'
+		else
+			reason=$3
+		fi
+		if [ $delay -eq 1 ]; then
+			delay_loop $delay 1m "$reason in %d minute" 1
+		else
+			delay_loop $delay 1m "$reason in %d minutes" 1
+		fi
+		sleep 40s
+		delay_loop 20 5s "$reason in %d seconds" 5
+		stop
+	fi
+	exit 0
+fi
+
+if [ "$1" = "restart" ]; then
+	if [ "$2" = "now" -o "$2" = "0" ]; then
+		restart
+	else
+		if [ "$2" = "" ]; then
+			delay=10
+		else
+			delay=$2
+		fi
+		if [ "$3" = "" ]; then
+			reason='Restarting'
+		else
+			reason=$3
+		fi
+		if [ $delay -eq 1 ]; then
+			delay_loop $delay 1m "$reason in %d minute" 1
+		else
+			delay_loop $delay 1m "$reason in %d minutes" 1
+		fi
+		sleep 40s
+		delay_loop 20 5s "$reason in %d seconds" 5
+		restart
+	fi
+	exit 0
+fi
+
+if [ "$1" = "run" ]; then
+	run
+	exit 0
+fi
+
+if [ "$1" = "cleanup" ]; then
+	for socket in `screen -ls | grep -v "No Sockets" | grep $servername | awk '{print $1}'`; do
+		$output && echo stopping $socket
+		send_command "say Stopping server"
+		send_command "stop"
+		done
+	while [ `server_instances` -gt 0 ]; do sleep 1; done
+	exit 0
+fi
+
+if [ "$1" = "command" ]; then
+	send_command "$2"
+	exit 0
+fi
+
+if [ "$1" = "dynmap-render" ]; then
+	send_command "dynmap fullrender world"
+	send_command "dynmap fullrender world_nether"
+	exit 0
+fi
+
+echo "Usage: $0 <start|stop|restart [minutes]|restart now|cleanup|command [data]|dynmap-render>"

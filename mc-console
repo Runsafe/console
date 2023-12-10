@@ -1,0 +1,5 @@
+#!/bin/bash
+server=$1
+(sleep 2; screen -S $server -X stuff "$(printf "\x15/f5\r")")&
+screen -URdS $1 -c /home/$server/shell.$2
+echo 再び戻ってくる

@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+	mc-console server4 split
+else
+	mc-console server4 $1
+fi
