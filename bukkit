@@ -1,10 +1,6 @@
 #!/bin/bash
 
 cd ~
-if [ ! -d bukkit ]; then
-	echo "No bukkit install found"
-	exit 1
-fi
 if [ ! -f .bukkit ]; then
 	echo "Missing .bukkit config, creating default"
 	cat > .bukkit << EOF
@@ -12,10 +8,16 @@ java="/etc/alternatives/jre_1.8.0/bin/java"
 java_opts="-XX:+UseG1GC -XX:MaxGCPauseMillis=50 -Xmx4G"
 servername=bukkit
 jar=spigot.jar
+bukkit=bukkit
 EOF
 fi
 
 . .bukkit
+
+if [ ! -d $bukkit ]; then
+	echo "No bukkit install found"
+	exit 1
+fi
 
 if [ "$2" = "-q" -o "$3" = "-q" ]; then
 	output=false
@@ -48,7 +50,7 @@ wait_stop()
 start()
 {
 	$output && echo -n "Server starting... ";
-	cd ~/bukkit
+	cd ~/$bukkit
 	screen -UdmS $servername $java $java_opts -jar $jar
 	# Restart log tails
 	(sleep 5; killall tail 2> /dev/null) &
@@ -57,7 +59,7 @@ start()
 
 run()
 {
-	cd ~/bukkit
+	cd ~/$bukkit
 	$java $java_opts -jar $jar
 }
 
@@ -70,7 +72,7 @@ restart()
 
 send_command()
 {
-	echo "[$(date +%H:%M:%S)] Console issued: ${1}" >> ~/bukkit/logging/console-cmd.log
+	echo "[$(date +%H:%M:%S)] Console issued: ${1}" >> ~/$bukkit/logging/console-cmd.log
 	screen -S $servername -p 0 -X stuff "$(printf "\x15${1}\r")"
 }
 
