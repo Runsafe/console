@@ -25,16 +25,6 @@ history -r ~/.mc_history
 if [ -f ~/.bukkit ]; then
 	. ~/.bukkit
 fi
-case `whoami` in
-	mortenn )
-		nick="docpify" ;;
-	hannahb )
-		nick="Kruithne" ;;
-	conners )
-		nick="JettKuso" ;;
-	jesseg )
-		nick="Centralan" ;;
-esac
 while true; do
 	if [ "$channel" = "global" ]; then
 		prompt=$nick
