@@ -1,15 +1,21 @@
 #!/bin/bash
 
-java="/etc/alternatives/jre_1.8.0/bin/java"
-java_opts="-XX:+UseG1GC -XX:MaxGCPauseMillis=50 -Xmx4G"
-
 cd ~
 if [ ! -d bukkit ]; then
 	echo "No bukkit install found"
 	exit 1
 fi
-
+if [ ! -f .bukkit ]; then
+	echo "Missing .bukkit config, creating default"
+	cat > .bukkit << EOF
+java="/etc/alternatives/jre_1.8.0/bin/java"
+java_opts="-XX:+UseG1GC -XX:MaxGCPauseMillis=50 -Xmx4G"
 servername=bukkit
+jar=spigot.jar
+EOF
+fi
+
+. .bukkit
 
 if [ "$2" = "-q" -o "$3" = "-q" ]; then
 	output=false
@@ -43,13 +49,7 @@ start()
 {
 	$output && echo -n "Server starting... ";
 	cd ~/bukkit
-	#if [ `whoami` = "server4" ]; then
-		#screen -UdmS $servername /usr/java/jdk1.7.0/bin/java -Xincgc -Xmx4G -agentlib:jdwp=transport=dt_socket,server=n,address=tsunami.lan.4th-age.com:5005,suspend=y -jar `ls -w1 *.jar | head -n1`
-		#screen -UdmS $servername /usr/lib/jvm/jre-1.8.0/bin/java -Xincgc -Xmx4G -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar `ls -w1 *.jar | head -n1`
-	screen -UdmS $servername $java $java_opts -jar `ls -w1 *.jar | head -n1`
-	#else
-	#	screen -UdmS $servername /usr/java/jdk1.7.0/bin/java -Xincgc -Xmx4G -jar `ls -w1 *.jar | head -n1`
-	#fi
+	screen -UdmS $servername $java $java_opts -jar $jar
 	# Restart log tails
 	(sleep 5; killall tail 2> /dev/null) &
 	$output && echo "OK";
@@ -58,7 +58,7 @@ start()
 run()
 {
 	cd ~/bukkit
-	$java $java_opts -jar `ls -w1 *.jar | head -n1`
+	$java $java_opts -jar $jar
 }
 
 restart()
