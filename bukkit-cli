@@ -22,6 +22,9 @@ puppet(){
 	echo bukkit command \'$command $parameters\'
 }
 history -r ~/.mc_history
+if [ -f ~/.bukkit ]; then
+	. ~/.bukkit
+fi
 case `whoami` in
 	mortenn )
 		nick="docpify" ;;
