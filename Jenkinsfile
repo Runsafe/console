@@ -1,5 +1,6 @@
 pipeline {
   triggers { pollSCM '@monthly' }
+  agent none
   stages {
     stage('Global scripts') {
       agent { label 'minecraft' }
