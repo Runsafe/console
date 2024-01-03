@@ -7,10 +7,10 @@ pipeline {
         sh 'install -t /usr/local/bin global/*'
       }
     }
-		stage('Server1 scripts') {
-			steps {
-				sh 'install -D -t ~/bin server/*'
-			}
-		}
+    stage('Server1 scripts') {
+      steps {
+        sh 'install -D -t ~/bin server/*'
+      }
+    }
   }
 }
