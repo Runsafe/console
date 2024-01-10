@@ -6,8 +6,8 @@ if [ -z "$1" ]; then
 else
         bukkit shutdown $delay "$@"
 fi
-cp -Ru ~updates/* ~bukkit/plugins/
-find ~updates -type f -delete
+cp -Ru ~/updates/* ~bukkit/plugins/
+find ~/updates -type f -delete
 bukkit start
 rm ~/.halted
 
