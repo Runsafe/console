@@ -12,28 +12,28 @@ pipeline {
       agent { label 'server1' }
       steps {
         sh 'install -D -t ~/bin server/*'
-        sh 'test -d server1 && install -D -t ~ server1/*'
+        sh 'if [ -d server1 ]; then install -D -t ~ server1/*; fi'
       }
     }
     stage('Server2 scripts') {
       agent { label 'server2' }
       steps {
         sh 'install -D -t ~/bin server/*'
-        sh 'test -d server2 && install -D -t ~ server2/*'
+        sh 'if [ -d server2 ]; then install -D -t ~ server2/*; fi'
       }
     }
     stage('Server3 scripts') {
       agent { label 'server3' }
       steps {
         sh 'install -D -t ~/bin server/*'
-        sh 'test -d server3 && install -D -t ~ server3/*'
+        sh 'if [ -d server3 ]; then install -D -t ~ server3/*; fi'
       }
     }
     stage('Server4 scripts') {
       agent { label 'server4' }
       steps {
         sh 'install -D -t ~/bin server/*'
-        sh 'test -d server4 && install -D -t ~ server4/*'
+        sh 'if [ -d server4 ]; then install -D -t ~ server4/*; fi'
       }
     }
   }
