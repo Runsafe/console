@@ -37,5 +37,5 @@ pipeline {
       }
     }
   }
-  post { always { buildReport 'console' } }
+  post { always { buildReport 'console', 'Scripts updated' } }
 }
