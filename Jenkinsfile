@@ -45,4 +45,5 @@ pipeline {
       }
     }
   }
+  post { always { buildReport 'console' } }
 }
