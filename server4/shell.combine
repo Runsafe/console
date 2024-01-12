@@ -1,0 +1,6 @@
+screen /usr/local/bin/mc-log.loop server4 logs/*.log logging/*.log
+split
+focus bottom
+resize 1
+screen /usr/local/bin/bukkit-cli server4
+caption string "%{kk}XXXXXX"

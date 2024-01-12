@@ -1,0 +1,11 @@
+attrcolor b ".I"
+attrcolor d -d
+altscreen
+term linux
+screen /usr/local/bin/start-mc-log.loop server4 logs/latest.log logging/root.log logging/console-cmd.log
+title bukkit
+screen /usr/local/bin/start-mc-log.loop server4 logging/runsafe.log logging/debug.log logging/protocol.log logging/broadcast.log
+title runsafe
+screen /usr/local/bin/bukkit-cli server4
+title cli
+caption string "%{kk}XXXXXX"
