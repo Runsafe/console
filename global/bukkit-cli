@@ -15,6 +15,9 @@ layout(){
 	screen -S $server -X resize 1
 }
 layout
+bukkit(){
+	sudo -u $server -s set -f && /home/$server/bin/bukkit $*
+}
 
 puppet(){
 	command="puppet"
@@ -52,27 +55,27 @@ while true; do
 		command=$(echo $first | sed -e 's/^\///')
 		if [ $prefix = "!" -a -n "$first" ]; then
 			if [ -n "$parameters" ]; then
-				cmd="bukkit command 'puppet $nick $channel /$emote $parameters'"
+				bukkit command 'puppet $nick $channel /$emote $parameters'
 			else
-				cmd="bukkit command 'puppet $nick $channel /$emote'"
+				bukkit command 'puppet $nick $channel /$emote'
 			fi
 		elif [ $prefix = "/" -a "$command" = "1" ]; then
 			if [ -z "$parameters" ]; then
 				channel=global
 			else
-				cmd=$(puppet $nick global $parameters)
+				puppet $nick global $parameters
 			fi
 		elif [ $prefix = "/" -a "$command" = "2" ]; then
 			if [ -z "$parameters" ]; then
 				channel=staff
 			else
-				cmd=$(puppet $nick staff $parameters)
+				puppet $nick staff $parameters
 			fi
 		elif [ $prefix = "/" -a "$command" = "3" ]; then
 			if [ -z "$parameters" ]; then
 				channel=dev
 			else
-				cmd=$(puppet $nick dev $parameters)
+				puppet $nick dev $parameters
 			fi
 		elif [ $prefix = "/" -a "$command" = "f5" ]; then
 			layout
@@ -82,22 +85,18 @@ while true; do
 			channel=$parameters
 		else
 			if [ -n "$first" -a "$command" = "$first" ]; then
-				command="puppet"
-				parameters="$nick $channel $first $parameters"
+				puppet $nick $channel $first $parameters
 			fi
 			parameters=$(echo $parameters | sed -e "s/'/'\"'\"'/g" -e 's/%/%%/')
 			if [ $command = "bukkit" ]; then
-				cmd="bukkit $parameters"
+				bukkit $parameters
 			elif [ $command = "start" ]; then
-				cmd="bukkit start"
+				bukkit start
 			elif [ $command = "restart" ]; then
-				cmd="bukkit restart 0"
+				bukkit restart 0
 			elif [ -n "$command" ]; then
-				cmd="bukkit command '$command $parameters'"
+				bukkit command '$command $parameters'
 			fi
-		fi
-		if [ -n "$cmd" ]; then
-			sudo -u $server -s set -f && $cmd
 		fi
 	fi
 done
