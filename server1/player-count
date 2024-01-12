@@ -1,0 +1,8 @@
+#!/bin/bash
+groups="unknown troll default guest builder wizard superuser moderator admin"
+for group in $groups; do
+        sql="SELECT name FROM player_session WHERE (logout IS NULL OR logout > NOW() - 300) AND \`group\` LIKE '$group' GROUP BY name"
+        n=`echo $sql | mysql -u$SERVER_DB_USERNAME -p$SERVER_DB_PASSWORD $SERVER_DB -N | wc -l`
+        echo -n "$group:$n "
+done
+echo

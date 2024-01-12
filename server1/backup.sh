@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# disused backup script, now using incremental.sh
+
 if [ "$1" = "-q" ]; then
         output=false
 else

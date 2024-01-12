@@ -1,0 +1,9 @@
+MAILTO=morten@runsafe.no
+#@hourly /home/server1/incremental.sh
+##@daily /home/server1/tripwire.sh
+#@daily /home/server1/backup-report.sh
+#@weekly /home/server1/potw.sh
+#@monthly /home/server1/player-cleanup.sh
+55 8 * * * /home/server1/restart.sh
+*/5 0-23 * * * /home/server1/heartbeat.sh
+*/5 * * * * /home/server1/save.sh
