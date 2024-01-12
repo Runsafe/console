@@ -15,19 +15,14 @@ layout(){
 	screen -S $server -X resize 1
 }
 layout
-bukkit(){
-	sudo -u $server /home/$server/bin/bukkit $*
-}
 
-puppet(){
-	command="puppet"
-	parameters=$(echo $* | sed -e "s/'/'\"'\"'/g" -e 's/%/%%/')
-	bukkit command \'$command $parameters\'
-}
 history -r ~/.mc_history
 if [ -f ~/.bukkit ]; then
 	. ~/.bukkit
 fi
+
+bukkit=sudo -u $server /home/$server/bin/bukkit
+
 while true; do
 	if [ "$channel" = "global" ]; then
 		prompt=$nick
@@ -55,27 +50,27 @@ while true; do
 		command=$(echo $first | sed -e 's/^\///')
 		if [ $prefix = "!" -a -n "$first" ]; then
 			if [ -n "$parameters" ]; then
-				bukkit command 'puppet $nick $channel /$emote $parameters'
+				$bukkit command "puppet $nick $channel /$emote $parameters"
 			else
-				bukkit command 'puppet $nick $channel /$emote'
+				$bukkit command "puppet $nick $channel /$emote"
 			fi
 		elif [ $prefix = "/" -a "$command" = "1" ]; then
 			if [ -z "$parameters" ]; then
 				channel=global
 			else
-				puppet $nick global $parameters
+				$bukkit command "puppet $nick global $parameters"
 			fi
 		elif [ $prefix = "/" -a "$command" = "2" ]; then
 			if [ -z "$parameters" ]; then
 				channel=staff
 			else
-				puppet $nick staff $parameters
+				$bukkit command "puppet $nick staff $parameters"
 			fi
 		elif [ $prefix = "/" -a "$command" = "3" ]; then
 			if [ -z "$parameters" ]; then
 				channel=dev
 			else
-				puppet $nick dev $parameters
+				$bukkit command "puppet $nick dev $parameters"
 			fi
 		elif [ $prefix = "/" -a "$command" = "f5" ]; then
 			layout
@@ -85,17 +80,16 @@ while true; do
 			channel=$parameters
 		else
 			if [ -n "$first" -a "$command" = "$first" ]; then
-				puppet $nick $channel $first $parameters
-			fi
-			parameters=$(echo $parameters | sed -e "s/'/'\"'\"'/g" -e 's/%/%%/')
-			if [ $command = "bukkit" ]; then
-				bukkit $parameters
+				$bukkit command "puppet $nick $channel $first $parameters"
+			elif [ $command = "bukkit" ]; then
+				parameters=$(echo $parameters | sed -e "s/'/'\"'\"'/g" -e 's/%/%%/')
+				$bukkit $parameters
 			elif [ $command = "start" ]; then
-				bukkit start
+				$bukkit start
 			elif [ $command = "restart" ]; then
-				bukkit restart 0
+				$bukkit restart 0
 			elif [ -n "$command" ]; then
-				bukkit command '$command $parameters'
+				$bukkit command "$command $parameters"
 			fi
 		fi
 	fi
