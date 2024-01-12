@@ -16,8 +16,7 @@ layout(){
 }
 layout
 bukkit(){
-	cmd=$(echo ~$server/bin/bukkit)
-	sudo -u $server $cmd $*
+	sudo -u $server /home/$server/bin/bukkit $*
 }
 
 puppet(){
