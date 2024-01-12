@@ -16,7 +16,7 @@ layout(){
 }
 layout
 bukkit(){
-	cmd=$(echo ~server/bin/bukkit)
+	cmd=$(echo ~$server/bin/bukkit)
 	sudo -u $server $cmd $*
 }
 
