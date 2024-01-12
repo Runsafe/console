@@ -3,7 +3,7 @@ set -o vi
 set -f
 server=$1
 channel=global
-layout(){
+function layout () {
 	screen -S $server -X only
 	screen -S $server -X select 0
 	screen -S $server -X split
@@ -23,7 +23,7 @@ fi
 
 bukkit="sudo -u $server /home/$server/bin/bukkit"
 
-prompt(){
+function prompt () {
 	if [ "$channel" = "global" ]; then
 		prompt=$nick
 	else
@@ -31,7 +31,7 @@ prompt(){
 	fi
 	read -r -e -p "$(printf "\001\033[33m\002[$server]\001\033[31m\002$prompt\001\033[m\002")> " first parameters
 	
-	if [ -z "$first" ]; then return fi
+	if [ -z "$first" ]; then return; fi
 	
 	if [ "$first" = "/close" ]; then
 		screen -S $server -X quit
@@ -53,57 +53,55 @@ prompt(){
 		return
 	fi
 
-	if [ $prefix = "/" ]; then
-		case $command in
-			1)
-				if [ -z "$parameters" ]; then
-					channel=global
-				else
-					$bukkit command "puppet $nick global $parameters"
-				fi
-				;;
-			2)
-				if [ -z "$parameters" ]; then
-					channel=staff
-				else
-					$bukkit command "puppet $nick staff $parameters"
-				fi
-				;;
-			3)
-				if [ -z "$parameters" ]; then
-					channel=dev
-				else
-					$bukkit command "puppet $nick dev $parameters"
-				fi
-				;;
-			f5)
-				layout
-				;;
-			nick)
-				nick=$parameters
-				;;
-			channel)
-				channel=$parameters
-				;;
-			start)
-				$bukkit start
-				;;
-			restart)
-				$bukkit restart 0
-				;;
-			bukkit)
-				parameters=$(echo $parameters | sed -e "s/'/'\"'\"'/g" -e 's/%/%%/')
-				$bukkit $parameters
-				;;
-			*)
-				$bukkit command "$command $parameters"
-		esac
+	if [ $prefix != "/" ]; then
+		$bukkit command "puppet $nick $channel $first $parameters"
 		return
 	fi
 	
-	if [ -n "$first" ]; then
-		$bukkit command "puppet $nick $channel $first $parameters"
-	fi
+	case $command in
+		1)
+			if [ -z "$parameters" ]; then
+				channel=global
+			else
+				$bukkit command "puppet $nick global $parameters"
+			fi
+			;;
+		2)
+			if [ -z "$parameters" ]; then
+				channel=staff
+			else
+				$bukkit command "puppet $nick staff $parameters"
+			fi
+			;;
+		3)
+			if [ -z "$parameters" ]; then
+				channel=dev
+			else
+				$bukkit command "puppet $nick dev $parameters"
+			fi
+			;;
+		f5)
+			layout
+			;;
+		nick)
+			nick=$parameters
+			;;
+		channel)
+			channel=$parameters
+			;;
+		start)
+			$bukkit start
+			;;
+		restart)
+			$bukkit restart 0
+			;;
+		bukkit)
+			parameters=$(echo $parameters | sed -e "s/'/'\"'\"'/g" -e 's/%/%%/')
+			$bukkit $parameters
+			;;
+		*)
+			$bukkit command "$command $parameters"
+	esac
 }
 
-while true; do prompt done
+while true; do prompt; done
