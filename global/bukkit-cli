@@ -97,7 +97,7 @@ while true; do
 			fi
 		fi
 		if [ -n "$cmd" ]; then
-			su -c "set -f;$cmd" $server
+			sudo -u $server -s set -f && $cmd
 		fi
 	fi
 done
