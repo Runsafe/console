@@ -2,6 +2,6 @@
 server=$1
 cd /home/$server/bukkit
 while true; do
-	sudu -u $server -s tail -qFn0 ${@:2} --max-unchanged-stats=5
+	sudo -u $server -s tail -qFn0 ${@:2} --max-unchanged-stats=5
 	echo '=== tail restarted ===' 
 done
