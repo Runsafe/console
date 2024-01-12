@@ -22,7 +22,7 @@ bukkit(){
 puppet(){
 	command="puppet"
 	parameters=$(echo $* | sed -e "s/'/'\"'\"'/g" -e 's/%/%%/')
-	echo bukkit command \'$command $parameters\'
+	bukkit command \'$command $parameters\'
 }
 history -r ~/.mc_history
 if [ -f ~/.bukkit ]; then
