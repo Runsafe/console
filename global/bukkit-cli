@@ -21,76 +21,89 @@ if [ -f ~/.bukkit ]; then
 	. ~/.bukkit
 fi
 
-bukkit=sudo -u $server /home/$server/bin/bukkit
+bukkit="sudo -u $server /home/$server/bin/bukkit"
 
-while true; do
+prompt(){
 	if [ "$channel" = "global" ]; then
 		prompt=$nick
 	else
 		prompt="${nick}(${channel})"
 	fi
 	read -r -e -p "$(printf "\001\033[33m\002[$server]\001\033[31m\002$prompt\001\033[m\002")> " first parameters
-	if [ -n "$first" ]; then
-		if [ "$first" = "/f5" ]; then
-			echo 'Reapplying screen layout..'
-		elif [ "$first" = "/close" ]; then
-			screen -S $server -X quit
-			exit 0
-		elif [ "$first" = "/1" -o "$first" = "/2" ]; then
-			echo 'Changing channel'
-		elif [ -n "$parameters" ]; then
-			history -s "$first $parameters"
-		else
-			history -s "$first"
-		fi
-		history -w ~/.mc_history
-		cmd=''
-		emote=$(echo $first | sed -e 's/^!//')
-		prefix=${first:0:1}
-		command=$(echo $first | sed -e 's/^\///')
-		if [ $prefix = "!" -a -n "$first" ]; then
-			if [ -n "$parameters" ]; then
-				$bukkit command "puppet $nick $channel /$emote $parameters"
-			else
-				$bukkit command "puppet $nick $channel /$emote"
-			fi
-		elif [ $prefix = "/" -a "$command" = "1" ]; then
-			if [ -z "$parameters" ]; then
-				channel=global
-			else
-				$bukkit command "puppet $nick global $parameters"
-			fi
-		elif [ $prefix = "/" -a "$command" = "2" ]; then
-			if [ -z "$parameters" ]; then
-				channel=staff
-			else
-				$bukkit command "puppet $nick staff $parameters"
-			fi
-		elif [ $prefix = "/" -a "$command" = "3" ]; then
-			if [ -z "$parameters" ]; then
-				channel=dev
-			else
-				$bukkit command "puppet $nick dev $parameters"
-			fi
-		elif [ $prefix = "/" -a "$command" = "f5" ]; then
-			layout
-		elif [ $prefix = "/" -a "$command" = "nick" ]; then
-			nick=$parameters
-		elif [ $prefix = "/" -a "$command" = "channel" ]; then
-			channel=$parameters
-		else
-			if [ -n "$first" -a "$command" = "$first" ]; then
-				$bukkit command "puppet $nick $channel $first $parameters"
-			elif [ $command = "bukkit" ]; then
+	
+	if [ -z "$first" ]; then return fi
+	
+	if [ "$first" = "/close" ]; then
+		screen -S $server -X quit
+		exit 0
+	elif [ -n "$parameters" ]; then
+		history -s "$first $parameters"
+	else
+		history -s "$first"
+	fi
+	
+	history -w ~/.mc_history
+	cmd=''
+	emote=$(echo $first | sed -e 's/^!//')
+	prefix=${first:0:1}
+	command=$(echo $first | sed -e 's/^\///')
+	
+	if [ "$prefix" = "!" ] && [ -n "$emote" ]; then
+		$bukkit command "puppet $nick $channel /$emote $parameters"
+		return
+	fi
+
+	if [ $prefix = "/" ]; then
+		case $command in
+			1)
+				if [ -z "$parameters" ]; then
+					channel=global
+				else
+					$bukkit command "puppet $nick global $parameters"
+				fi
+				;;
+			2)
+				if [ -z "$parameters" ]; then
+					channel=staff
+				else
+					$bukkit command "puppet $nick staff $parameters"
+				fi
+				;;
+			3)
+				if [ -z "$parameters" ]; then
+					channel=dev
+				else
+					$bukkit command "puppet $nick dev $parameters"
+				fi
+				;;
+			f5)
+				layout
+				;;
+			nick)
+				nick=$parameters
+				;;
+			channel)
+				channel=$parameters
+				;;
+			start)
+				$bukkit start
+				;;
+			restart)
+				$bukkit restart 0
+				;;
+			bukkit)
 				parameters=$(echo $parameters | sed -e "s/'/'\"'\"'/g" -e 's/%/%%/')
 				$bukkit $parameters
-			elif [ $command = "start" ]; then
-				$bukkit start
-			elif [ $command = "restart" ]; then
-				$bukkit restart 0
-			elif [ -n "$command" ]; then
+				;;
+			*)
 				$bukkit command "$command $parameters"
-			fi
-		fi
+		esac
+		return
 	fi
-done
+	
+	if [ -n "$first" ]; then
+		$bukkit command "puppet $nick $channel $first $parameters"
+	fi
+}
+
+while true; do prompt done
