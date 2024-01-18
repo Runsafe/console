@@ -68,16 +68,23 @@ function prompt () {
 			;;
 		2)
 			if [ -z "$parameters" ]; then
+				channel=dev
+			else
+				$bukkit command "puppet $nick dev $parameters"
+			fi
+			;;
+		3)
+			if [ -z "$parameters" ]; then
 				channel=staff
 			else
 				$bukkit command "puppet $nick staff $parameters"
 			fi
 			;;
-		3)
+		4)
 			if [ -z "$parameters" ]; then
-				channel=dev
+				channel=unsafe
 			else
-				$bukkit command "puppet $nick dev $parameters"
+				$bukkit command "puppet $nick unsafe $parameters"
 			fi
 			;;
 		f5)
