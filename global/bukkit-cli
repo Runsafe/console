@@ -1,4 +1,19 @@
 #!/bin/bash
+
+if [ -z "$1" ]; then
+	echo "Usage: $0 servername"
+	exit 1
+fi
+
+if [ -z "$2" ]; then
+	while true; do
+		$0 $1 run
+		if [ $? -gt 0 ]; then
+			exit 1
+		fi
+	done
+fi
+
 set -o vi
 set -f
 server=$1
@@ -89,6 +104,10 @@ function prompt () {
 			;;
 		f5)
 			layout
+			exit 0
+			;;
+		close)
+			exit 1
 			;;
 		nick)
 			nick=$parameters
