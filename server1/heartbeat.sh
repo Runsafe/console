@@ -17,7 +17,7 @@ if [ $crashed -gt 0 ]; then
         done
         bukkit restart 0
 else
-        running=`screen -ls | grep -v "No Sockets" | grep -c `whoami``
+        running=`screen -ls | grep -v "No Sockets" | grep -c $(whoami)`
         if [ $running -eq 0 ]; then
                 echo not running, not crashed!
                 bukkit start
