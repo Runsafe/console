@@ -1,5 +1,6 @@
 #!/bin/bash
 # Incremental backups of minecraft
+. .bash_profile
 
 #bukkit command 'dog speak Hourly back-up, the server may lag for a moment!'
 cd ~/backups
