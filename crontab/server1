@@ -1,3 +1,4 @@
+MAILFROM="Minecraft Server1"
 MAILTO=morten@runsafe.no
 @hourly /home/server1/incremental.sh
 ##@daily /home/server1/tripwire.sh
