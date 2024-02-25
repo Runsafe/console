@@ -34,5 +34,3 @@ nice -n 19 rsync -a --delete bukkit/ "backups/T-0/"
 
 # Update backup timestamp
 touch backups/T-0/
-
-echo 'Backup completed'
