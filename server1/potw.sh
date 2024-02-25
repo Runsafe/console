@@ -1,4 +1,6 @@
 #!/bin/bash
+. .bash_profile
+
 mysql -u$SERVER_DB_USERNAME -p$SERVER_DB_PASSWORD $SERVER_DB < ~/potw.sql
 mysql -u$SERVER_DB_USERNAME -p$SERVER_DB_PASSWORD $SERVER_DB < ~/zbuilders.sql
 bukkit command 'rs config rel WarpDrive'
