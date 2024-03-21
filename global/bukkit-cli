@@ -97,9 +97,9 @@ function prompt () {
 			;;
 		4)
 			if [ -z "$parameters" ]; then
-				channel=unsafe
+				channel=Unsafe
 			else
-				$bukkit command "puppet $nick unsafe $parameters"
+				$bukkit command "puppet $nick Unsafe $parameters"
 			fi
 			;;
 		f5)
