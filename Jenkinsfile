@@ -3,12 +3,14 @@ pipeline {
   agent none
   stages {
     stage('Global scripts') {
+      when { branch 'main' }
       agent { label 'minecraft' }
       steps {
         sh 'install -t /usr/local/bin global/*'
       }
     }
     stage('Server1 scripts') {
+      when { branch 'main' }
       agent { label 'server1' }
       steps {
         sh 'install -D -t ~/bin server/*'
@@ -17,6 +19,7 @@ pipeline {
       }
     }
     stage('Server2 scripts') {
+      when { branch 'main' }
       agent { label 'server2' }
       steps {
         sh 'install -D -t ~/bin server/*'
@@ -25,6 +28,7 @@ pipeline {
       }
     }
     stage('Server3 scripts') {
+      when { branch 'main' }
       agent { label 'server3' }
       steps {
         sh 'install -D -t ~/bin server/*'
@@ -33,6 +37,7 @@ pipeline {
       }
     }
     stage('Server4 scripts') {
+      when { branch 'main' }
       agent { label 'server4' }
       steps {
         sh 'install -D -t ~/bin server/*'
