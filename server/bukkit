@@ -4,7 +4,7 @@ cd ~
 if [ ! -f .bukkit ]; then
 	echo "Missing .bukkit config, creating default"
 	cat > .bukkit << EOF
-java="/etc/alternatives/jre_1.8.0/bin/java"
+java="/usr/lib/jvm/temurin-8-jre/bin/java"
 java_opts="-XX:+UseG1GC -XX:MaxGCPauseMillis=50 -Xmx4G"
 servername=bukkit
 jar=spigot.jar
