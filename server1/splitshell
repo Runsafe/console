@@ -1,6 +1,0 @@
-screen /bin/log1.loop
-split
-focus bottom
-resize 1
-screen /bin/s1-cli
-caption string "%{kk}XXXXXX"

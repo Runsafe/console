@@ -1,0 +1,22 @@
+#!/bin/bash
+session="$1"
+server="$2"
+
+# Don't recreate if already running
+if ! tmux has-session -t "$session" 2>/dev/null; then
+        tmux new-session -d -s "$session" -n mc "/usr/local/bin/start-mc-log.loop $server logs/latest.log logging/root.log logging/console-cmd.log"
+        tmux split-window -v -t "$session:0" "/usr/local/bin/start-mc-log.loop $server logging/runsafe.log logging/debug.log logging/protocol.log logging/broadcast.log ../builds.txt"
+        tmux split-window -v -t "$session:0" "/usr/local/bin/bukkit-cli $server split"
+fi
+
+# Disable the green status bar
+tmux set-option -t "$session" status off
+
+# Resize the panes
+tmux resize-pane -t "$session:0.2" -y 1
+tmux resize-pane -t "$session:0.0" -y 15
+
+# Focus the CLI pane
+tmux select-pane -t "$session:0.2"
+
+tmux set-option -g default-terminal "screen-256color"

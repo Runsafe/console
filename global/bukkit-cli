@@ -1,13 +1,13 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then
-	echo "Usage: $0 servername"
+if [ -z "$2" ]; then
+	echo "Usage: $0 servername [combine|split|standalone]"
 	exit 1
 fi
 
-if [ -z "$2" ]; then
+if [ -z "$3" ]; then
 	while true; do
-		$0 $1 run
+		$0 $1 $2 run
 		if [ $? -gt 0 ]; then
 			exit 1
 		fi
@@ -17,19 +17,15 @@ fi
 set -o vi
 set -f
 server=$1
+user=$(whoami)
+layout=$2
+if [ "$layout" != "standalone" ]; then
+	session="${server}-${layout}-${user}"
+fi
 channel=global
-function layout () {
-	screen -S $server -X only
-	screen -S $server -X select 0
-	screen -S $server -X split
-	screen -S $server -X focus
-	screen -S $server -X select 1
-	screen -S $server -X split
-	screen -S $server -X focus
-	screen -S $server -X select 2
-	screen -S $server -X resize 1
-}
-layout
+if [ ! -z "$session" ]; then
+	tmux-layout-$layout "$session" "$server"
+fi
 
 history -r ~/.mc_history
 if [ -f ~/.bukkit ]; then
@@ -49,8 +45,11 @@ function prompt () {
 	if [ -z "$first" ]; then return; fi
 	
 	if [ "$first" = "/close" ]; then
-		screen -S $server -X quit
-		exit 0
+		if [ -z "$session" ]; then
+			exit 0
+		fi
+		tmux kill-session -t $session
+		exit 1
 	elif [ -n "$parameters" ]; then
 		history -s "$first $parameters"
 	else
@@ -103,7 +102,11 @@ function prompt () {
 			fi
 			;;
 		f5)
-			layout
+			if [ -z "$session" ]; then
+				echo "No tmux session, restarting bukkit CLI"
+				exit 0
+			fi
+			tmux-layout-$layout "$session" "$server"
 			exit 0
 			;;
 		close)
@@ -111,9 +114,13 @@ function prompt () {
 			;;
 		nick)
 			nick=$parameters
+			echo "nick=${nick}" > ~/.bukkit
+			echo "channel=${channel}" >> ~/.bukkit
 			;;
 		channel)
 			channel=$parameters
+			echo "nick=${nick}" > ~/.bukkit
+			echo "channel=${channel}" >> ~/.bukkit
 			;;
 		start)
 			$bukkit start
