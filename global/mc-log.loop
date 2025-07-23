@@ -1,6 +1,7 @@
 #!/bin/bash
 server=$1
 cd /home/$server/bukkit
+seed-logs ${@:2} | ansi-truecolour
 while true; do
 	sudo -u $server -s tail -qFn0 ${@:2} --max-unchanged-stats=5 | ansi-truecolour
 	echo '=== tail restarted ===' 
