@@ -14,3 +14,6 @@ INSERT INTO creative_week_plot (`name`,`starting`) VALUES (@name, NOW());
 
 UPDATE warpdrive_portals SET destX=@x, destY=@y, destZ=@z, destYaw=@yaw, destPitch=@pitch
 WHERE ID='potw_portal';
+
+UPDATE warpdrive_locations SET x=@x, y=@y, z=@z, yaw=@yaw, pitch=@pitch
+WHERE name='potw';
