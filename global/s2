@@ -1,0 +1,2 @@
+#!/bin/bash
+mc-console server2 split
